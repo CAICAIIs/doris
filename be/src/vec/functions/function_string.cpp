@@ -67,6 +67,28 @@ struct StringASCII {
     }
 };
 
+struct NameStringOrd {
+    static constexpr auto name = "ord";
+};
+
+struct StringOrd {
+    using ReturnType = DataTypeInt32;
+    static constexpr auto PrimitiveTypeImpl = PrimitiveType::TYPE_STRING;
+    using Type = String;
+    using ReturnColumnType = ColumnInt32;
+
+    static Status vector(const ColumnString::Chars& data, const ColumnString::Offsets& offsets,
+                         PaddedPODArray<Int32>& res) {
+        auto size = offsets.size();
+        res.resize(size);
+        for (int i = 0; i < size; ++i) {
+            const char* raw_str = reinterpret_cast<const char*>(&data[offsets[i - 1]]);
+            res[i] = (offsets[i] == offsets[i - 1]) ? 0 : static_cast<uint8_t>(raw_str[0]);
+        }
+        return Status::OK();
+    }
+};
+
 struct NameQuote {
     static constexpr auto name = "quote";
 };
@@ -1283,6 +1305,7 @@ using StringFindInSetImpl = StringFunctionImpl<LeftDataType, RightDataType, Find
 
 // ready for regist function
 using FunctionStringASCII = FunctionUnaryToType<StringASCII, NameStringASCII>;
+using FunctionStringOrd = FunctionUnaryToType<StringOrd, NameStringOrd>;
 using FunctionStringLength = FunctionUnaryToType<StringLengthImpl, NameStringLength>;
 using FunctionCrc32 = FunctionUnaryToType<Crc32Impl, NameCrc32>;
 using FunctionStringUTF8Length = FunctionUnaryToType<StringUtf8LengthImpl, NameStringUtf8Length>;
@@ -1319,6 +1342,7 @@ using FunctionStringRPad = FunctionStringPad<StringRPad>;
 
 void register_function_string(SimpleFunctionFactory& factory) {
     factory.register_function<FunctionStringASCII>();
+    factory.register_function<FunctionStringOrd>();
     factory.register_function<FunctionStringLength>();
     factory.register_function<FunctionCrc32>();
     factory.register_function<FunctionStringUTF8Length>();

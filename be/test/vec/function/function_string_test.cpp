@@ -994,6 +994,32 @@ TEST(function_string_test, function_ascii_test) {
     check_function_all_arg_comb<DataTypeInt32, true>(func_name, input_types, data_set);
 }
 
+TEST(function_string_test, function_ord_test) {
+    std::string func_name = "ord";
+
+    InputTypeSet input_types = {PrimitiveType::TYPE_VARCHAR};
+
+    DataSet data_set = {
+            {{std::string("YXNk5L2g5aW9")}, std::int32_t(89)},
+            {{std::string("aGVsbG8gd29ybGQ")}, std::int32_t(97)},
+            {{std::string("SEVMTE8sIV4l")}, std::int32_t(83)},
+            {{std::string("__123hehe1")}, std::int32_t(95)},
+            {{std::string("")}, std::int32_t(0)},
+            {{std::string("5ZWK5ZOI5ZOI5ZOI8J+YhCDjgILigJTigJQh")}, std::int32_t(53)},
+            {{std::string("ò&ø")}, std::int32_t(195)},
+            {{std::string("TVl0ZXN0U1RS")}, std::int32_t(84)},
+            {{Null()}, Null()},
+            {{std::string("123321!@#@$!@%!@#!@$!@")}, std::int32_t(49)},
+            {{std::string("123")}, std::int32_t(49)},
+            {{std::string("A")}, std::int32_t(65)},
+            {{std::string("a")}, std::int32_t(97)},
+            {{std::string("0")}, std::int32_t(48)},
+            {{std::string("!")}, std::int32_t(33)},
+    };
+
+    check_function_all_arg_comb<DataTypeInt32, true>(func_name, input_types, data_set);
+}
+
 TEST(function_string_test, function_char_length_test) {
     std::string func_name = "char_length";
 
